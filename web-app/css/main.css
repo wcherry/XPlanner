@@ -144,7 +144,7 @@ tr {
 }
 td, th {
     font: 11px verdana, arial, helvetica, sans-serif;
-    line-height: 12px;
+    //    line-height: 12px;
     padding: 5px 6px;
     text-align: left;
     vertical-align: top;
@@ -154,7 +154,7 @@ th {
     color: #666;
     font-size: 11px;
     font-weight: bold;
-    line-height: 17px;
+    // line-height: 17px;
     padding: 2px 6px;
 }
 th a:link, th a:visited, th a:hover {
@@ -183,7 +183,7 @@ th.desc a {
 }
 
 /* LIST */
-
+/*
 .list table {
     border-collapse: collapse;
 }
@@ -194,6 +194,7 @@ th.desc a {
     background: #b2d1ff;
 }
 
+*/
 /* PAGINATION */
 
 .paginateButtons {
@@ -271,3 +272,16 @@ th.desc a {
     background: transparent url(../images/skin/database_save.png) 5px 50% no-repeat;
     padding-left: 28px;
 }
+
+
+		.shadow {
+			-moz-box-shadow: 5px 5px 5px #ccc;
+			-webkit-box-shadow: 5px 5px 5px #ccc;
+			box-shadow: 5px 5px 5px #ccc;
+		}
+		.list-header {align: center; background-color: #66ff77; border-style: solid; border-width: 1px; padding: 5px;}
+		.list {border-style: solid; border-width: 1px; }
+		.notecard {width: 250; height: 150; background-color: #ffff66; border-style: solid; border-width: 1px; padding: 5px;}
+		.header {font-size: large; font-weight: bold; color: blue}
+		#sortable1, #sortable2 { list-style-type: none; margin: 0; padding: 0;  margin-right: 10px; width: 260;}
+		#sortable1 li, #sortable2 li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em;  width: 260;}

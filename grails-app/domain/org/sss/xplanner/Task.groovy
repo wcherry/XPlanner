@@ -1,5 +1,5 @@
 package org.sss.xplanner
-
+  
 class Task {
   String title
   String description
@@ -20,8 +20,8 @@ class Task {
     status()
     assignee()
     iteration(range: 0..26)
-    dateModified(display: false)
-    dateCreated(display: false)
-    dateStarted(display: false)
+    dateModified(display: false, nullable: true)
+    dateCreated(display: false, nullable: true)
+    dateStarted(display: false, nullable: true)
   }
 }
