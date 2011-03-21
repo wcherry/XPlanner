@@ -1,4 +1,3 @@
-
 <%@ page import="org.sss.xplanner.Project" %>
 <html>
     <head>
@@ -36,14 +35,15 @@
       $(function() {
         $('#postId').click(function(){showForm(true);});
       	$( "#sortable1, #sortable2" ).sortable({connectWith: ".connectedSortable2"}).disableSelection();
-        $( "#sortable#1, #sortable2" ).droppable({
+        $( "#sortable1, #sortable2" ).droppable({
       		  drop: function( event, ui ) {
-			  	  alert("Dropped: "+ui.draggable[0].children[0].item[0].id);
-			    }
-		      });
-          alert("Loaded");
-        });
-    
+			  	    //text = ui.draggable[0].children[0].item[0].id;
+              text = ui.draggable.attr('id');
+              $('#console').html("dropped "+text+" on "+this.id+"</br>"+$('#console').html());
+              return true;
+			      }
+		    });
+      });
     </g:javascript>
         <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
@@ -62,33 +62,26 @@
 
 <table valign="top" width="1020">
 <tr><td class="list-header" width="500">Unassigned</td><td class="list-header" width="500">Iteration 1 (Current)</td></tr>
-<tr valign="top"><td height="1400">
+<tr valign="top"><td height="500">
 <ul id="sortable1" class="connectedSortable2" >
             <g:each in="${tasks}" status="i" var="task">
-            <li class="ui-state-default">			
-        		<div id="a" class="notecard shadow" >
-			        <div id="a.h" >${task.title}</div>
+            <li class="ui-state-default" id="${task.id}">			
+        		<div class="notecard shadow" >
+			        <div>${task.title}</div>
 			        <hr/>
-              <div id="a.b">${task.description}</div>
+              <div>${task.description}</div>
         		</div>
 	          </li>
             </g:each>
 </ul>
 </td><td>
 <ul id="sortable2" class="connectedSortable2">
-	<li class="ui-state-highlight">Item 1</li>
-	<li class="ui-state-highlight">Item 2</li>
-	<li class="ui-state-highlight">Item 3</li>
-	<li class="ui-state-highlight">Item 4</li>
-	<li class="ui-state-highlight">Item 5</li>
 </ul>
 </td></tr>
 </table>
             
-            
-            <g:each in="${tasks}" status="i" var="task">
-            ${task.title}<br/>
-            </g:each>
-        </div>
+<div id="console" class="console">
+Logging...<br>
+</div>
     </body>
 </html>
