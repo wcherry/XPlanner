@@ -12,9 +12,29 @@ class BootStrap {
       new TaskStatus(name: "Completed",sequence: 2,description: "na").save()
       new TaskStatus(name: "Postponed",sequence: 3,description: "na").save()
       new TaskStatus(name: "Canceled",sequence: 4,description: "na").save()
-      new User(username: "admin").save()
+      def u = new User(username: "admin").save()
       new User(username: "guest").save()
-      new Project(title: "Default", description: "Default").save()
+      
+      User.metaClass.'static'.loggedOnUser = {
+        return u
+      }
+      
+      
+      
+      def p = new Project(title: "Default", description: "Default").save()
+      def t = new Task(project: p, creator: u, title: "Title #1", effort: 1, iteration: 0)
+      t.save()
+      if(t.hasErrors()) {
+        t.errors.each {
+          println it
+        }
+      }
+      p.addToTasks(t)
+      p.addToTasks(new Task(creator: u,  title: "Title #2", effort: 1, iteration: 0))
+      p.addToTasks(new Task(creator: u,  title: "Title #3", effort: 1, iteration: 0))
+      p.addToTasks(new Task(creator: u,  title: "Title #4", effort: 1, iteration: 0))
+      p.addToTasks(new Task(creator: u,  title: "Title #5", effort: 1, iteration: 0))
+      p.save()
       break;
       }
 	

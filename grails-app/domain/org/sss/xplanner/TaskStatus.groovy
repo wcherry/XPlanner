@@ -1,6 +1,7 @@
 package org.sss.xplanner
 
 class TaskStatus {
+  static defaultStatus
   String name
   int sequence
   String description
@@ -11,6 +12,13 @@ class TaskStatus {
     description(maxSize: 255)
   }
 
+  static TaskStatus getDefaultStatus(){
+    if(defaultStatus==null){
+      defaultStatus = TaskStatus.findBySequence(0)
+    }
+    return defaultStatus
+  }
+    
    String toString(){
     name
   }
