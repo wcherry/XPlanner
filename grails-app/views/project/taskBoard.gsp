@@ -7,81 +7,106 @@
     <g:javascript library="jquery/jquery-ui-1.8.10.custom.min" />
 
 <g:javascript>
-    
-      function completed(){
-        clearPost();
-        showSpinner(false);
-        showForm(false);
-      }
-      function clearPost(){
-        $('caption').value ='';
-        $('body').value='';
-      }
-      function showError(e){
-        $('errorMsg').append(e)
-      }
+  function showSpinner(visible){
+    $('spinner').show(visible); // .style.display= visible?"inline":"none";
+  }
       
-      function showSpinner(visible){
-        $('spinner').show(visible); // .style.display= visible?"inline":"none";
-      }
-      
-      function showForm(visible){
-        if(visible)
-          $('.postForm').slideDown("slow");
-        else
-          $('.postForm').slideUp("slow");
-      }
-      
-      $(function() {
-        $('#postId').click(function(){showForm(true);});
-      	$( "#sortable1, #sortable2" ).sortable({connectWith: ".connectedSortable2"}).disableSelection();
-        $( "#sortable1, #sortable2" ).droppable({
-      		  drop: function( event, ui ) {
-			  	    //text = ui.draggable[0].children[0].item[0].id;
-              text = ui.draggable.attr('id');
-              $('#console').html("dropped "+text+" on "+this.id+"</br>"+$('#console').html());
-              return true;
-			      }
-		    });
+  function log(msg){
+    $('#console').html($('#console').html()+"</br>"+msg);//.autoscroll();
+  }
+
+  function updateCallback(e){
+    log("Call back "+e.status);
+  }
+  
+  function loadTasksForIteration(el, iter){
+    var params = {project: "${project.id}", iteration: iter};
+    $(el).load('/XPlanner/task/ajaxLoadProjectIterationTasks',params, updateCallback);
+  }
+  
+  function updateTaskPositions(){
+    log("#sortable1");
+    var params = new Object();
+    var it = $("#sortable1").attr("data-iteration");
+    $( "#sortable1" ).children().each(function(i,el){
+      text = $(el).find("div div").text();
+      log("Note Id#"+el.id+" is at index "+i+" title "+text);
+      params['taskId_'+it+"_"+i] = el.id;
       });
-    </g:javascript>
-        <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
-        <title><g:message code="default.show.label" args="[entityName]" /></title>
-    </head>
-    <body>
+    log("#sortable2");
+    it = $("#sortable2").attr("data-iteration");
+    $( "#sortable2" ).children().each(function(i,el){
+      text = $(el).find("div div").text();
+      log("Note Id#"+el.id+" is at index "+i+" title "+text);
+      params['taskId_'+it+"_"+i] = el.id;
+      });
+      
+            
+    $.post('/XPlanner/task/ajaxUpdateTaskPositions',params, updateCallback);
+
+  }
+      
+  function previousIteration(id){
+    log("Previous Iteration");
+    loadTasksForIteration($("#sortable2"), $("#sortable2").attr("data-iteration")-1)
+  }
+      
+  function nextIteration(){
+    log("Next Iteration");
+    loadTasksForIteration($("#sortable2"), $("#sortable2").attr("data-iteration")+1)
+  }
+      
+  $(function() {
+    $('#postId').click(function(){showForm(true);});
+  	$( "#sortable1, #sortable2" ).sortable({
+      connectWith: ".connectedSortable2"
+      }).disableSelection();
+    $( "#sortable1, #sortable2" ).droppable({
+  		  drop: function( event, ui ) {
+          //text = ui.draggable.attr('id');
+          //pos = $(this).index(ui.draggable);
+          //pos = $(ui.draggable).index();
+          
+          //log("dropped "+text+" on "+this.id+" at "+pos);
+          return true;
+	      }
+    });
+    $(".notecard").dblclick(function(){
+      log("Double Click");
+      });
+    loadTasksForIteration($("#sortable1"), 0);
+    loadTasksForIteration($("#sortable2"), $("#sortable2").attr("data-iteration"))
+    });
+</g:javascript>
+    <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
+    <title><g:message code="default.show.label" args="[entityName]" /></title>
+  </head>
+  <body>
+<div id="console" class="console">
+Logging...
+</div>
         <div class="nav">
             <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
         </div>
         <div class="body">
+        <input type="button" onClick="updateTaskPositions();" value="Update"/>
             <h1><g:message code="default.show.label" args="[entityName]" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
 
 <table valign="top" width="1020">
-<tr><td class="list-header" width="500">Unassigned</td><td class="list-header" width="500">Iteration 1 (Current)</td></tr>
+<tr><td class="list-header" width="500">Unassigned</td><td class="list-header" width="500"><span id="prev_it" class="clickable" onclick="previousIteration()">&lt;&lt;&nbsp;</span>Iteration 1 (Current)<span id="next_it" class="clickable" onclick="nextIteration()">&gt;&gt;&nbsp;</span></td></tr>
 <tr valign="top"><td height="500">
-<ul id="sortable1" class="connectedSortable2" >
-            <g:each in="${tasks}" status="i" var="task">
-            <li class="ui-state-default" id="${task.id}">			
-        		<div class="notecard shadow" >
-			        <div>${task.title}</div>
-			        <hr/>
-              <div>${task.description}</div>
-        		</div>
-	          </li>
-            </g:each>
+<ul id="sortable1" class="connectedSortable2" data-iteration="0">
 </ul>
 </td><td>
-<ul id="sortable2" class="connectedSortable2">
+<ul id="sortable2" class="connectedSortable2" data-iteration="1">
 </ul>
 </td></tr>
 </table>
-            
-<div id="console" class="console">
-Logging...<br>
-</div>
+          
     </body>
 </html>

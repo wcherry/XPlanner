@@ -4,6 +4,7 @@ class ProjectController {
   static scaffold = true
  
   def taskBoard = {
-    [tasks: Project.get(params.id).tasks]  
+    def p = Project.get(params.id)
+    [project: p, tasks: p.tasks]  
   }
 }

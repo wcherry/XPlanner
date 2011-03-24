@@ -13,6 +13,7 @@ class Task {
   int iteration
   int displayPosition  = 999// this is currently only used as a display setting
 
+  static mapping = { sort displayPosition:"asc"}
   static belongsTo = [project: Project]
   static constraints = {
     title(blank: false)
