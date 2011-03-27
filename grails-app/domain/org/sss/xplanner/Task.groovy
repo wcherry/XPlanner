@@ -10,7 +10,7 @@ class Task {
   TaskStatus status
   User assignee
   User creator
-  int iteration
+  int iteration = 0
   int displayPosition  = 999// this is currently only used as a display setting
 
   static mapping = { sort displayPosition:"asc"}
@@ -22,7 +22,8 @@ class Task {
     status(nullable: true)
     assignee(nullable: true)
     creator(nullable: true)
-    iteration(range: 0..26)
+    iteration(nullable: true, range: 0..26)
+    displayPosition(nullable: true, blank: true)
     lastUpdated(display: true, nullable: true)
     dateCreated(display: true, nullable: true)
     dateStarted(display: true, nullable: true)
