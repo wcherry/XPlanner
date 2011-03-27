@@ -19,6 +19,7 @@ build.xml
 
 # logs
 stacktrace.log
+*.stackdump
 /target
 
 # project release file
