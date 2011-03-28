@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="layout" content="main" />
-    <jv:generateValidation domain="task" form="cardForm"/>
+  
     <g:javascript library="jquery" />
     <g:javascript library="jquery/jquery-ui-1.8.10.custom.min" />
     <g:javascript>
@@ -80,11 +80,27 @@
       }
       
       function displayNewCard(){
+        //TODO: Clear Card
         $("#new_card").show();
       }
       
       function hideNewCard(){
         $("#new_card").hide();
+      }
+      
+      function editCallback(e, status){
+        showSpinner(false);
+        log("Call back "+status);
+        if(status == 'error'){
+          alert(e);
+        } else 
+          $("#new_card").offset({top: $(window).height()/2-100, left: $(window).width()/2-100}).show();
+      }
+      
+      function displayEditCard(id){
+        log("Calling displayEditCard with argument "+id);
+        params = {task: id};
+        $("#new_card_container").load('/XPlanner/task/ajaxLoadTask',params, editCallback);
       }
       
       function prevIteration(id){
@@ -113,16 +129,18 @@
         $('#postId').click(function(){showForm(true);});
       	$( "#sortable1, #sortable2" ).sortable({
           connectWith: ".connectedSortable2"
-          }).disableSelection().droppable();
-        $(".notecard").dblclick(function(){
-            log("Double Click");
+          }).disableSelection().droppable();//.dblclick(function(){log("double click");});
+        $(".notecard").live("dblclick", function(){
+            id = $(this).parent().attr("id");
+            log("Double Click: "+id);
+            displayEditCard(id);
           });
         loadTasksForIteration("#sortable1", 0);
         loadTasksForIteration("#sortable2", 0);
         $("#prev_it").click(function(){prevIteration('#sortable2');});
         $("#next_it").click(function(){nextIteration('#sortable2');});
         $("#new_card").offset({top: $(window).height()/2-100, left: $(window).width()/2-100});//top(400).left(400);
-        $("#new_card_close").click(function(){
+        $("#new_card_close").live("click", function(){
           $(this).parent().hide();
         });
       });
@@ -156,25 +174,8 @@
         </tr>
       </table>
     </div>
-    <div id="new_card" class="floating rounded hidden">
-      <div align="right" id="new_card_close" class="clickable">x</div>
-      <g:formRemote url="${[controller: 'task', action:'ajaxSave']}" name="cardForm" method="post" onComplete="updateCallback2(event)" before="if( validateForm( this ) ) { " after="}" beforeSend="return validateForm(this);">
-        <g:hiddenField name="project" value="${project.id}"/>
-        <g:hiddenField name="iteration" value="0"/> <%-- Workaround to js validaton bug --%>
-        <g:hiddenField name="displayPosition" value="999"/> <%-- Workaround to js validaton bug --%>
-        Title<br/>
-        <g:textField label="Title" name="title"/>
-        Description<br/>
-        <g:textArea name="description"/>
-        Effort<br/>
-        <g:textField name="effort"/>
-        Status<br/>
-        <g:select name="status"
-          from="${TaskStatus.list()}"
-          value="${TaskStatus.defaultStatus.sequence}"
-          optionKey="sequence" />
-        <input type="submit" value="Add"/>
-      </g:formRemote>
+    <div id="new_card_container">
+    <g:render template="../task/editCard"/>
     </div>
   </body>
 </html>

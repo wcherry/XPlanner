@@ -2,6 +2,12 @@ package org.sss.xplanner
 
 class TaskController {
   static scaffold = true
+
+  def ajaxLoadTask = {
+    def task = Task.get(params.task.toLong())
+    render(template: "editCard", bean: task, var: 'task')
+  }
+
   
   def ajaxSave = {
     println "Task:ajaxSave: $params"
