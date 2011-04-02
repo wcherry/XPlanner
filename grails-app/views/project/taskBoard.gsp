@@ -81,6 +81,13 @@
       
       function displayNewCard(){
         //TODO: Clear Card
+        $("#id").val("");
+        $("#iteration").val("0");
+        $("#displayPosition").val("999");
+        $("#title").val("");
+        $("#description").val("");
+        $("#effort").val("");        
+        $("#status").val("${TaskStatus.defaultStatus.id}");
         $("#new_card").show();
       }
       
