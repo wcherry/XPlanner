@@ -1,5 +1,4 @@
 import grails.util.Environment
-import org.apache.shiro.crypto.hash.Sha1Hash
 import org.sss.xplanner.*
 
 class BootStrap {
@@ -22,18 +21,11 @@ class BootStrap {
           
           
           def p = new Project(title: "Default", description: "Default").save()
-          def t = new Task(project: p, creator: u, title: "Title #1", effort: 1, iteration: 0)
-          t.save()
-          if(t.hasErrors()) {
-            t.errors.each {
-              println it
-            }
-          }
-          p.addToTasks(t)
-          p.addToTasks(new Task(creator: u,  title: "Title #2", effort: 1, iteration: 0))
-          p.addToTasks(new Task(creator: u,  title: "Title #3", effort: 1, iteration: 0))
-          p.addToTasks(new Task(creator: u,  title: "Title #4", effort: 1, iteration: 0))
-          p.addToTasks(new Task(creator: u,  title: "Title #5", effort: 1, iteration: 0))
+          p.addToTasks(new Task(creator: u, title: "Title #1", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
+          p.addToTasks(new Task(creator: u,  title: "Title #2", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
+          p.addToTasks(new Task(creator: u,  title: "Title #3", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
+          p.addToTasks(new Task(creator: u,  title: "Title #4", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
+          p.addToTasks(new Task(creator: u,  title: "Title #5", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
           p.save()
           break;
 
