@@ -11,9 +11,15 @@ class TaskController {
   
   def ajaxSave = {
     println "Task:ajaxSave: $params"
+    def task = null
     params.project = Project.get(params.project)
     params.status = TaskStatus.get(params.status)
-    def task = new Task(params)
+    if(params.id){
+      task = Task.get(params.id)
+    } else {
+      task = new Task()
+    }
+    task.properties = params
     task.save()
     if(task.hasErrors()){
       response.status = 500
