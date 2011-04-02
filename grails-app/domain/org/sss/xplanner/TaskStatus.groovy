@@ -11,6 +11,9 @@ class TaskStatus {
     sequence(range: 0..100)
     description(maxSize: 255)
   }
+  static mapping = {
+    sort sequence:'asc'
+  }
 
   static TaskStatus getDefaultStatus(){
     if(defaultStatus==null){
@@ -21,5 +24,15 @@ class TaskStatus {
     
    String toString(){
     name
+  }
+  
+  def compareTo(other){
+    name.compareTo(other.toString())
+  }
+  
+  boolean equals(other){
+    boolean x = compareTo(other) == 0
+    println "Comparing $this to $other: $x"
+    return x
   }
 }
