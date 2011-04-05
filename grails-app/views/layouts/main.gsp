@@ -13,5 +13,9 @@
         </div>
         <div id="grailsLogo"><a href="http://grails.org"><img src="${resource(dir:'images',file:'grails_logo.png')}" alt="Grails" border="0" /></a></div>
         <g:layoutBody />
+        <div>
+        <hr/>
+        <small><i>${org.codehaus.groovy.grails.commons.ApplicationHolder.application.metadata['app.name']} version ${org.codehaus.groovy.grails.commons.ApplicationHolder.application.metadata['app.version']} running on Grails v${org.codehaus.groovy.grails.commons.ApplicationHolder.application.metadata['app.grails.version']}</i></small>
+        </div>
     </body>
 </html>
