@@ -135,8 +135,9 @@
       $(function() {
         $('#postId').click(function(){showForm(true);});
       	$( "#sortable1, #sortable2" ).sortable({
-          connectWith: ".connectedSortable2"
-          }).disableSelection().droppable();//.dblclick(function(){log("double click");});
+          connectWith: ".connectedSortable2",
+          update: function(event, ui){updateTaskPositions();}
+          }).disableSelection().droppable();
         $(".notecard").live("dblclick", function(){
             id = $(this).parent().attr("id");
             log("Double Click: "+id);
@@ -160,7 +161,7 @@
       Logging...
     </div>
     <div class="body">
-    <input type="button" onClick="updateTaskPositions();" value="Update"/>  <input type="button" onClick="displayNewCard();" value="New"/>
+    <input type="button" id="update" onClick="updateTaskPositions();" value="Update"/>  <input type="button" id="new" onClick="displayNewCard();" value="New"/>
       <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
       </g:if>
