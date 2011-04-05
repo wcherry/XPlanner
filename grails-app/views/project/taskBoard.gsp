@@ -21,6 +21,8 @@
         if(status == 'error'){
           alert(e);
         }
+        sumEfforts($("#sortable2"));
+
       }
       
       function updateCallback2(e, obj){
@@ -30,30 +32,32 @@
           alert(e);
         }
         hideNewCard();
-        loadTasksForIteration("#sortable1", 0);
+        loadTasksForIteration($("#sortable1"), 0);
       }
       
       function loadTasksForIteration(el, direction){
         showSpinner(true);
-        str = Number($(el).attr("data-iteration"));
+        str = Number(el.attr("data-iteration"));
         log("Iteration "+str);
-        iter = Number($(el).attr("data-iteration")) + direction;
+        iter = Number(el.attr("data-iteration")) + direction;
         params = {project: "${project.id}", iteration: iter};
-        $(el).load('/XPlanner/task/ajaxLoadProjectIterationTasks',params, updateCallback);
+        el.load('/XPlanner/task/ajaxLoadProjectIterationTasks',params, updateCallback);
         
         //
         //TODO: This code should be moved into the callback. If we are unable to get the iteration requested then there will be a mismatch.
         //
-        $(el).attr("data-iteration", iter);
+        el.attr("data-iteration", iter);
         
         //
         //TODO: Currently the table headers and the sortable list are not tied together. If we add addtional list then this code will break.
         //
-        $('#iter_number').text(""+iter);    
-        if(iter == ${project.currentIteration}){
-          $('#current_id').text("(Current)");
-        } else {
-          $('#current_id').text("");
+        if(el.attr("id")=="sortable2"){
+          $('#iter_number').text(""+iter);    
+          if(iter == ${project.currentIteration}){
+            $('#current_id').text("(Current)");
+            } else {
+            $('#current_id').text("");
+          }
         }
       }
       
@@ -132,6 +136,15 @@
         loadTasksForIteration($(id),+1);
       }
       
+      function sumEfforts(list){
+        total = 0;
+        list.find(".notecard").each(function(index, el){total += Number($(el).attr("data-effort"))});
+        //alert("Total effort for "+list.attr('id')+" is "+total);
+        $('#effort').text(total);
+        
+      }
+      
+      
       $(function() {
         $('#postId').click(function(){showForm(true);});
       	$( "#sortable1, #sortable2" ).sortable({
@@ -143,8 +156,8 @@
             log("Double Click: "+id);
             displayEditCard(id);
           });
-        loadTasksForIteration("#sortable1", 0);
-        loadTasksForIteration("#sortable2", 0);
+        loadTasksForIteration($("#sortable1"), 0);
+        loadTasksForIteration($("#sortable2"), 0);
         $("#prev_it").click(function(){prevIteration('#sortable2');});
         $("#next_it").click(function(){nextIteration('#sortable2');});
         $("#new_card").offset({top: $(window).height()/2-100, left: $(window).width()/2-100});//top(400).left(400);
@@ -161,7 +174,9 @@
       Logging...
     </div>
     <div class="body">
-    <input type="button" id="update" onClick="updateTaskPositions();" value="Update"/>  <input type="button" id="new" onClick="displayNewCard();" value="New"/>
+      <input type="button" id="show_effort" onClick="sumEfforts($('#sortable2'));" value="Effort"/>
+      <input type="button" id="update" onClick="updateTaskPositions();" value="Update"/>  
+      <input type="button" id="new" onClick="displayNewCard();" value="New"/>
       <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
       </g:if>
@@ -170,7 +185,7 @@
       <tr>
           <td class="list-header" width="500">Unassigned</td>
           <td class="list-header" width="500"><span id="prev_it" class="clickable">&lt;&lt;&nbsp;</span>
-            Iteration <span id="iter_number">1</span> <span id="current_id">(Current)</span><span id="next_it" class="clickable">&gt;&gt;&nbsp;</span></td>
+            Iteration <span id="iter_number">1</span> <span id="current_id">(Current)</span><span id="effort"/><span id="next_it" class="clickable">&gt;&gt;&nbsp;</span></td>
         </tr>
         <tr valign="top">
           <td height="500">
