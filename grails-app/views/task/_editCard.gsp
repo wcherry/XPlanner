@@ -18,6 +18,6 @@
     from="${TaskStatus.list()}"
     value="${task?.status?.id?:TaskStatus.defaultStatus.id}"
     optionKey="id" />
-    <input type="submit" value="Add"/>
+    <input type="submit" value="Save" id="save"/>
   </g:formRemote>
 </div>
