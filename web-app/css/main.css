@@ -285,9 +285,9 @@ th.desc a {
       background: -moz-linear-gradient(top,  #0011ee,  #0066ee); /* for firefox 3.6+ */ 
     }
 		.list {border-style: solid; border-width: 1px; }
-		.notecard {width: 250; height: 150; background-color: #ffff66; border-style: solid; border-width: 1px; padding: 5px;}
+		.notecard {width: 250; height: 150; background-image:url('../images/white_card.png'); border-style: solid; border-width: 1px; padding: 5px;}
 		.header {font-size: large; font-weight: bold; color: blue}
-		#sortable1, #sortable2 { list-style-type: none; margin: 0; padding: 0;  margin-right: 10px; width: 260;}
+    #sortable1, #sortable2 { border-style:solid; border-width:1px; list-style-type: none; margin: 0; padding: 0;  margin-right: 10px; width: 260; overflow: auto;}
 		#sortable1 li, #sortable2 li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em;  width: 260;}
 
     .console {overflow: auto;height: 80px; color: white; background-color: #101030; border-style: solid; border-width: 1px;}

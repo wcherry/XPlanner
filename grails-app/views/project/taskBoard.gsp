@@ -125,6 +125,11 @@
         loadTasksForIteration($(id),-1);
       }
       
+      function updateLists(){
+        loadTasksForIteration($("#sortable1"), 0);
+        loadTasksForIteration($("#sortable2"), 0);
+      }        
+      
       function nextIteration(id){
         //
         //TODO: This code should check the current iteration and not allow for the selection of
@@ -144,13 +149,30 @@
         
       }
       
-      
+      function deleteCard(id, action){
+        log(action+"ing card with id "+id);
+        params.id = id;
+        params.deleteAction = action
+        $.post('/XPlanner/task/ajaxMarkTaskDeleted',params, function(e,s){log("Task deleted "+s); updateLists();});
+      }
+
+      function resizeFrame() 
+      {
+        var h = $(window).height();
+        var w = $(window).width();
+        $("#sortable1, #sortable2").css('height',(h < 1024 || w < 768) ? 500 : 400);
+      }
+          
       $(function() {
         $('#postId').click(function(){showForm(true);});
       	$( "#sortable1, #sortable2" ).sortable({
           connectWith: ".connectedSortable2",
           update: function(event, ui){updateTaskPositions();}
           }).disableSelection().droppable();
+
+        $.event.add(window, "load", resizeFrame);
+        $.event.add(window, "resize", resizeFrame);
+          
         $(".notecard").live("dblclick", function(){
             id = $(this).parent().attr("id");
             log("Double Click: "+id);
@@ -164,6 +186,10 @@
         $("#new_card_close").live("click", function(){
           $(this).parent().hide();
         });
+        $(".delete_card").live("click", function(){
+          id = $(this).closest(".ui-state-default").attr("id");
+          deleteCard(id, "delete");
+          });
       });
     </g:javascript>
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
@@ -185,7 +211,7 @@
       <tr>
           <td class="list-header" width="500">Unassigned</td>
           <td class="list-header" width="500"><span id="prev_it" class="clickable">&lt;&lt;&nbsp;</span>
-            Iteration <span id="iter_number">1</span> <span id="current_id">(Current)</span><span id="effort"/><span id="next_it" class="clickable">&gt;&gt;&nbsp;</span></td>
+            Iteration <span id="iter_number">1</span> <span id="current_id">(Current)</span><span id="effort"> </span>  <span id="next_it" class="clickable">&gt;&gt;&nbsp;</span></td>
         </tr>
         <tr valign="top">
           <td height="500">
