@@ -8,7 +8,6 @@ class TaskController {
     render(template: "editCard", bean: task, var: 'task')
   }
 
-  
   def ajaxSave = {
     println "Task:ajaxSave: $params"
     def task = null
@@ -45,14 +44,27 @@ class TaskController {
     def allErrors = []
     def project, tasks
     if((project = Project.get(params.project.toLong()))){
-      tasks = Task.findAllByProjectAndIteration(project, params.iteration.toInteger(),[max:30, sort:'displayPosition',order:'asc'])
+      tasks = Task.findAll("from Task where project=:project and iteration=:iteration and deleted=false",
+        [project: project, iteration: params.iteration.toInteger()],[max:30, sort:'displayPosition',order:'asc'])
       render(template: "taskCard", collection: tasks, var: 'task')
-      } else {
-        allErrors << "Unable to load project for id ${params.project}"
-      }
-      if(allErrors){
-        response.status = 500
-        render(allErrors)
-      }
+    } else {
+      allErrors << "Unable to load project for id ${params.project}"
     }
+    if(allErrors){
+      response.status = 500
+      render(allErrors)
+    }
+  }
+  
+  def ajaxMarkTaskDeleted = {
+    println "deleting card ${params.id} action ${params.deleteAction}"
+    def task = Task.get(params.id)
+    task.deleted = params.deleteAction =="delete" // undelete is the default action
+    task.save(true)
+    if(task.hasErrors()){
+      response.status = 500
+      render(task.errors)
+    } else render("task marked deleted successfully")
+  }
+    
 }

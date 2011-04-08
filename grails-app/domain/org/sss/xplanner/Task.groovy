@@ -12,6 +12,7 @@ class Task {
   User creator
   Integer iteration = 0
   Integer displayPosition  = 999// this is currently only used as a display setting
+  Boolean deleted = false
 
   static mapping = { sort displayPosition:"asc"}
   static belongsTo = [project: Project]
@@ -27,5 +28,6 @@ class Task {
     lastUpdated(display: true, nullable: true)
     dateCreated(display: true, nullable: true)
     dateStarted(display: true, nullable: true)
+    deleted(display: false, nullable: true)
   }
 }
