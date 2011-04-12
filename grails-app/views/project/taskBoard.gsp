@@ -149,11 +149,24 @@
         
       }
       
+      function deleteCardCallback(event, status){
+        log("Task deleted "+status); 
+        updateLists();
+        if(event.deleted){
+          $("#message").stop(true).addClass("clickable").bind("click", function(){
+            id = $(this).attr("data-id");
+            deleteCard(id, "undelete")});        
+          $("#message").attr("data-id", event.id).text("Undelete task "+event.title).effect("highlight", {}, 3000).delay(18000).fadeOut(3000);
+        } else {
+          $("#message").unbind("click").stop(true).attr("data-id", 0).text("Task "+event.title+" undeleted").effect("highlight", {}, 3000).delay(4000).fadeOut(3000);
+        } 
+      }
+      
       function deleteCard(id, action){
         log(action+"ing card with id "+id);
         params.id = id;
         params.deleteAction = action
-        $.post('/XPlanner/task/ajaxMarkTaskDeleted',params, function(e,s){log("Task deleted "+s); updateLists();});
+        $.post('/XPlanner/task/ajaxMarkTaskDeleted',params, function(e,s){deleteCardCallback(e,s);});
       }
 
       function resizeFrame() 
@@ -190,6 +203,7 @@
           id = $(this).closest(".ui-state-default").attr("id");
           deleteCard(id, "delete");
           });
+          
       });
     </g:javascript>
     <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
@@ -203,6 +217,7 @@
       <input type="button" id="show_effort" onClick="sumEfforts($('#sortable2'));" value="Effort"/>
       <input type="button" id="update" onClick="updateTaskPositions();" value="Update"/>  
       <input type="button" id="new" onClick="displayNewCard();" value="New"/>
+      <div id="message"></div>
       <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
       </g:if>

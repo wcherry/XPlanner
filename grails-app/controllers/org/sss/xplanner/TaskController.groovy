@@ -1,5 +1,7 @@
 package org.sss.xplanner
 
+import grails.converters.JSON
+
 class TaskController {
   static scaffold = true
 
@@ -64,7 +66,7 @@ class TaskController {
     if(task.hasErrors()){
       response.status = 500
       render(task.errors)
-    } else render("task marked deleted successfully")
+    } else render task as JSON
   }
     
 }

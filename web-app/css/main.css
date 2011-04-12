@@ -296,3 +296,4 @@ th.desc a {
     .floating {position:absolute;float:left;width:500px;height:300px;background-color: #3e3e3e; color: white;}
     textarea {height: 60px;}
     .hidden {display: none;}
+    #message {text-align: center;}
