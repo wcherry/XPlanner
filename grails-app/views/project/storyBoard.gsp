@@ -8,21 +8,11 @@
     <g:javascript library="jquery/jquery-ui-1.8.10.custom.min" />
     <g:javascript>
       function showSpinner(visible){
-        $('spinner').show(visible); 
+        $('#spinner').show(visible); 
       }
     
       function log(msg){
         $('#console').html($('#console').html()+"</br>"+msg).scrollTop(9999999);
-      }
-      
-      function updateCallback(e, status){
-        showSpinner(false);
-        log("Call back "+status);
-        if(status == 'error'){
-          alert(e);
-        }
-        sumEfforts($("#sortable2"));
-
       }
       
       function updateCallback2(e, obj){
@@ -41,7 +31,14 @@
         log("Iteration "+str);
         iter = Number(el.attr("data-iteration")) + direction;
         params = {project: "${project.id}", iteration: iter};
-        el.load('/XPlanner/task/ajaxLoadProjectIterationTasks',params, updateCallback);
+        el.load('/XPlanner/userStory/ajaxGetAllByProjectAndIteration',params, function(event, status){
+          showSpinner(false);
+          log("Call back "+status);
+          if(status == 'error'){
+            alert(event);
+          }
+          sumEfforts($("#sortable2"));
+        });
         
         //
         //TODO: This code should be moved into the callback. If we are unable to get the iteration requested then there will be a mismatch.
@@ -61,19 +58,27 @@
         }
       }
       
-      function updateTaskPositions(){
+      function updateTaskPositions(event, ui){
+        var list = $(ui.item).parent();
+        log("Updating list..."+list.attr('id'));
         showSpinner(true);
         
         params = new Object();
         //
         //TODO: If we add addtional list then this code will break. Should grab ALL sortable list.
         //
-        it = $("#sortable1").attr("data-iteration");
-        $( "#sortable1" ).children().each(function(i,el){ params['taskId_'+it+"_"+i] = el.id; });
-        it = $("#sortable2").attr("data-iteration");
-        $( "#sortable2" ).children().each(function(i,el){ params['taskId_'+it+"_"+i] = el.id; });
+        it = list.attr("data-iteration");
+        list.children().each(function(i,el){ params['storyId_'+it+"_"+i] = el.id; });
         
-        $.post('/XPlanner/task/ajaxUpdateTaskPositions',params, updateCallback);
+        $.post('/XPlanner/userStory/ajaxUpdatePriority',params, function(event, status){
+          showSpinner(false);
+          log("Call back "+status);
+          if(status == 'error'){
+            alert(event);
+          }
+          if(list.attr('id')!='sortable1') sumEfforts(list);
+        });*/
+        log("Updating list...done");//+ $(ui).attr('id'));
       }
       
       function clearTasks(id){
@@ -91,7 +96,7 @@
         $("#title").val("");
         $("#description").val("");
         $("#effort").val("");        
-        $("#status").val("${TaskStatus.defaultStatus.id}");
+        $("#status").val("${Status.defaultStatus.id}");
         $("#new_card").show();
       }
       
@@ -99,19 +104,18 @@
         $("#new_card").hide();
       }
       
-      function editCallback(e, status){
-        showSpinner(false);
-        log("Call back "+status);
-        if(status == 'error'){
-          alert(e);
-        } else 
-          $("#new_card").offset({top: $(window).height()/2-100, left: $(window).width()/2-100}).show();
-      }
-      
       function displayEditCard(id){
         log("Calling displayEditCard with argument "+id);
         params = {task: id};
-        $("#new_card_container").load('/XPlanner/task/ajaxLoadTask',params, editCallback);
+        $("#new_card_container").load('/XPlanner/task/ajaxLoadTask',params, function(event, status) {
+          showSpinner(false);
+          log("Call back "+status);
+          if(status == 'error'){
+            alert(event);
+          } else {
+            $("#new_card").offset({top: $(window).height()/2-100, left: $(window).width()/2-100}).show();
+          }
+        });
       }
       
       function prevIteration(id){
@@ -149,24 +153,22 @@
         
       }
       
-      function deleteCardCallback(event, status){
-        log("Task deleted "+status); 
-        updateLists();
-        if(event.deleted){
-          $("#message").stop(true).addClass("clickable").bind("click", function(){
-            id = $(this).attr("data-id");
-            deleteCard(id, "undelete")});        
-          $("#message").attr("data-id", event.id).text("Undelete task "+event.title).effect("highlight", {}, 3000).delay(18000).fadeOut(3000);
-        } else {
-          $("#message").unbind("click").stop(true).attr("data-id", 0).text("Task "+event.title+" undeleted").effect("highlight", {}, 3000).delay(4000).fadeOut(3000);
-        } 
-      }
-      
       function deleteCard(id, action){
         log(action+"ing card with id "+id);
         params.id = id;
         params.deleteAction = action
-        $.post('/XPlanner/task/ajaxMarkTaskDeleted',params, function(e,s){deleteCardCallback(e,s);});
+        $.post('/XPlanner/task/ajaxMarkTaskDeleted',params, function(event, status){
+          log("Task deleted "+status); 
+          updateLists();
+          if(event.deleted){
+            $("#message").stop(true).addClass("clickable").bind("click", function(){
+              id = $(this).attr("data-id");
+              deleteCard(id, "undelete")});        
+            $("#message").attr("data-id", event.id).text("Undelete task "+event.title).effect("highlight", {}, 3000).delay(18000).fadeOut(3000);
+            } else {
+            $("#message").unbind("click").stop(true).attr("data-id", 0).text("Task "+event.title+" undeleted").effect("highlight", {}, 3000).delay(4000).fadeOut(3000);
+          } 
+        });
       }
 
       function resizeFrame() 
@@ -179,8 +181,8 @@
       $(function() {
         $('#postId').click(function(){showForm(true);});
       	$( "#sortable1, #sortable2" ).sortable({
-          connectWith: ".connectedSortable2",
-          update: function(event, ui){updateTaskPositions();}
+          connectWith: ".connectedSortable",
+          update: function(event, ui){updateTaskPositions(event, ui);}
           }).disableSelection().droppable();
 
         $.event.add(window, "load", resizeFrame);
@@ -214,9 +216,11 @@
       Logging...
     </div>
     <div class="body">
-      <input type="button" id="show_effort" onClick="sumEfforts($('#sortable2'));" value="Effort"/>
-      <input type="button" id="update" onClick="updateTaskPositions();" value="Update"/>  
-      <input type="button" id="new" onClick="displayNewCard();" value="New"/>
+    <div class="button_bar">
+<!--      <input type="button" id="show_effort" onClick="sumEfforts($('#sortable2'));" value="Effort"/>-->
+      <input type="image" id="new" onClick="displayNewCard();" src="${resource(dir:'images',file:'new.png')}"/>
+      <input type="image" id="update" onClick="updateTaskPositions();" src="${resource(dir:'images',file:'refresh.png')}"/>  
+      </div>
       <div id="message"></div>
       <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
@@ -230,16 +234,16 @@
         </tr>
         <tr valign="top">
           <td height="500">
-            <ul id="sortable1" class="connectedSortable2" data-iteration="0"/>
+            <ul id="sortable1" class="connectedSortable" data-iteration="0"/>
           </td>
           <td>
-            <ul id="sortable2" class="connectedSortable2" data-iteration="${project.currentIteration}"/>
+            <ul id="sortable2" class="connectedSortable" data-iteration="${project.currentIteration}"/>
           </td>
         </tr>
       </table>
     </div>
     <div id="new_card_container">
-    <g:render template="../task/editCard"/>
+    <g:render template="../userStory/editableStoryCard"/>
     </div>
   </body>
 </html>

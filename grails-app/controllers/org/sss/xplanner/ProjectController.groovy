@@ -3,8 +3,8 @@ package org.sss.xplanner
 class ProjectController {
   static scaffold = true
  
-  def taskBoard = {
+  def storyBoard = {
     def p = Project.get(params.id)
-    [project: p, tasks: p.tasks]  
+    [project: p]  
   }
 }

@@ -1,6 +1,6 @@
 package org.sss.xplanner
 
-class TaskStatus {
+class Status {
   static defaultStatus
   String name
   int sequence
@@ -15,9 +15,9 @@ class TaskStatus {
     sort sequence:'asc'
   }
 
-  static TaskStatus getDefaultStatus(){
+  static Status getDefaultStatus(){
     if(defaultStatus==null){
-      defaultStatus = TaskStatus.findBySequence(0)
+      defaultStatus = Status.findBySequence(0)
     }
     return defaultStatus
   }

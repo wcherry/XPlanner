@@ -5,7 +5,7 @@ class Project {
   String description
   int currentIteration = 1
 
-  static hasMany = [tasks: Task]
+  static hasMany = [stories: UserStory]
   static constraints = {
     title()
     description(maxSize: 2048)

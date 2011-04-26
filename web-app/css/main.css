@@ -38,7 +38,7 @@ ul {
     height: 180px;
 }
 
-input, select, textarea {
+input text, select, textarea {
     background-color: #fcfcfc;
     border: 1px solid #ccc;
     font: 11px verdana, arial, helvetica, sans-serif;
@@ -297,3 +297,4 @@ th.desc a {
     textarea {height: 60px;}
     .hidden {display: none;}
     #message {text-align: center;}
+.button_bar {border-style: solid; border-width: 1px; padding: 2px;}

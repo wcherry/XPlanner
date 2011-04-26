@@ -1,27 +1,27 @@
 package org.sss.xplanner
   
-class Task {
+class UserStory {
   String title
   String description
   Date dateCreated
   Date lastUpdated
   BigDecimal effort
   Date dateStarted
-  TaskStatus status
+  Status status
   User assignee
   User creator
-  Integer iteration = 0
-  Integer displayPosition  = 999// this is currently only used as a display setting
+  Integer iteration 
+  Integer priority
   Boolean deleted = false
 
-  static mapping = { sort displayPosition:"asc"}
+  static mapping = { sort priority:"asc"}
   static belongsTo = [project: Project]
   static constraints = {
     title(blank: false)
     effort(range: 1..14)
     status(nullable: true)
     iteration(nullable: true, range: 0..26)
-    displayPosition(nullable: true)
+    priority(nullable: true)
     assignee(nullable: true)
     creator(nullable: true)
     description(nullable: true, maxSize: 2048)

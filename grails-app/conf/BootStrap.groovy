@@ -6,11 +6,11 @@ class BootStrap {
     def init = { servletContext ->
       switch (Environment.current) {
         case Environment.DEVELOPMENT:
-          new TaskStatus(name: "Unassigned", sequence: 0,description: "Unassigned").save()
-          new TaskStatus(name: "In Progress", sequence: 1,description: "na").save()
-          new TaskStatus(name: "Completed",sequence: 2,description: "na").save()
-          new TaskStatus(name: "Postponed",sequence: 3,description: "na").save()
-          new TaskStatus(name: "Canceled",sequence: 4,description: "na").save()
+          new Status(name: "Unassigned", sequence: 0,description: "Unassigned").save()
+          new Status(name: "In Progress", sequence: 1,description: "na").save()
+          new Status(name: "Completed",sequence: 2,description: "na").save()
+          new Status(name: "Postponed",sequence: 3,description: "na").save()
+          new Status(name: "Canceled",sequence: 4,description: "na").save()
           def u = new User(username: "admin").save()
           new User(username: "guest").save()
           
@@ -21,20 +21,20 @@ class BootStrap {
           
           
           def p = new Project(title: "Default", description: "Default").save()
-          p.addToTasks(new Task(creator: u, title: "Title #1", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
-          p.addToTasks(new Task(creator: u,  title: "Title #2", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
-          p.addToTasks(new Task(creator: u,  title: "Title #3", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
-          p.addToTasks(new Task(creator: u,  title: "Title #4", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
-          p.addToTasks(new Task(creator: u,  title: "Title #5", effort: 1, iteration: 0, status: TaskStatus.defaultStatus))
+          p.addToStories(new UserStory(creator: u, title: "Title #1", effort: 1, iteration: 0, status: Status.defaultStatus))
+          p.addToStories(new UserStory(creator: u,  title: "Title #2", effort: 1, iteration: 0, status: Status.defaultStatus))
+          p.addToStories(new UserStory(creator: u,  title: "Title #3", effort: 1, iteration: 0, status: Status.defaultStatus))
+          p.addToStories(new UserStory(creator: u,  title: "Title #4", effort: 1, iteration: 0, status: Status.defaultStatus))
+          p.addToStories(new UserStory(creator: u,  title: "Title #5", effort: 1, iteration: 0, status: Status.defaultStatus))
           p.save()
           break;
 
         case Environment.TEST:
-          new TaskStatus(name: "Unassigned", sequence: 0,description: "Unassigned").save()
-          new TaskStatus(name: "In Progress", sequence: 1,description: "na").save()
-          new TaskStatus(name: "Completed",sequence: 2,description: "na").save()
-          new TaskStatus(name: "Postponed",sequence: 3,description: "na").save()
-          new TaskStatus(name: "Canceled",sequence: 4,description: "na").save()
+          new Status(name: "Unassigned", sequence: 0,description: "Unassigned").save()
+          new Status(name: "In Progress", sequence: 1,description: "na").save()
+          new Status(name: "Completed",sequence: 2,description: "na").save()
+          new Status(name: "Postponed",sequence: 3,description: "na").save()
+          new Status(name: "Canceled",sequence: 4,description: "na").save()
           def u = new User(username: "admin").save()
           new User(username: "guest").save()
           
