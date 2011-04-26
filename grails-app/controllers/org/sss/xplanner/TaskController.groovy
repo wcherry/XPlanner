@@ -36,13 +36,13 @@ class TaskController {
         task.iteration = iter.toInteger()
         task.displayPosition = pos.toInteger()
         task.save()
-        println task.errors
       }
     }
     render("updated all tasks successfully")
   }
   
   def ajaxLoadProjectIterationTasks = {
+    println params
     def allErrors = []
     def project, tasks
     if((project = Project.get(params.project.toLong()))){

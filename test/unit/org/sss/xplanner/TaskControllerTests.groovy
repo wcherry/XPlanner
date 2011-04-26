@@ -11,7 +11,10 @@ class TaskControllerTests extends ControllerUnitTestCase {
         super.tearDown()
     }
 
-    void testSomething() {
-
+    void testAjaxLoadProjectIterationTasks() {
+      controller.params.project = 1L
+      controller.params.iteration = 0;
+      controller.ajaxLoadProjectIterationTasks()
+      println controller.response.contentAsString
     }
 }
