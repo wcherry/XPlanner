@@ -1,14 +1,24 @@
-package org.sss.xplanner;
+package org.sss.xplanner
 
 class User {
-    String username
-    
 
-    static constraints = {
-        username(nullable: false, blank: false)
-    }
+	String username
+	String password
+	boolean enabled
+	boolean accountExpired
+	boolean accountLocked
+	boolean passwordExpired
 
-    String toString(){
-      username
-    }
+	static constraints = {
+		username blank: false, unique: true
+		password blank: false
+	}
+
+	static mapping = {
+		password column: '`password`'
+	}
+
+	Set<Role> getAuthorities() {
+		UserRole.findAllByUser(this).collect { it.role } as Set
+	}
 }

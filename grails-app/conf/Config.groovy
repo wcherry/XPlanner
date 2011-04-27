@@ -64,6 +64,12 @@ environments {
     }
 
 }
+grails{
+   mail {
+     host = "smtp-relay.network.local"
+     port = 25
+    }}
+
 
 // log4j configuration
 log4j = {
@@ -88,3 +94,11 @@ log4j = {
 
     warn   'org.mortbay.log'
 }
+
+// Added by the Spring Security Core plugin:
+grails.plugins.springsecurity.userLookup.userDomainClassName = 'org.sss.xplanner.User'
+grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'org.sss.xplanner.UserRole'
+grails.plugins.springsecurity.authority.className = 'org.sss.xplanner.Role'
+grails.plugins.springsecurity.rememberMe.persistent = true
+grails.plugins.springsecurity.rememberMe.persistentToken.domainClassName = 'org.sss.xplanner.PersistentLogin'
+//grails.plugins.springsecurity.securityConfigType = 'Requestmap'

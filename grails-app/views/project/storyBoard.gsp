@@ -179,7 +179,10 @@
       }
           
       $(function() {
+<sec:ifAllGranted roles="ROLE_USER">        
         $('#postId').click(function(){showForm(true);});
+        
+        $( "#sortable1, #sortable2" ).addClass("connectedSortable");
       	$( "#sortable1, #sortable2" ).sortable({
           connectWith: ".connectedSortable",
           update: function(event, ui){updateTaskPositions(event, ui);}
@@ -193,10 +196,6 @@
             log("Double Click: "+id);
             displayEditCard(id);
           });
-        loadTasksForIteration($("#sortable1"), 0);
-        loadTasksForIteration($("#sortable2"), 0);
-        $("#prev_it").click(function(){prevIteration('#sortable2');});
-        $("#next_it").click(function(){nextIteration('#sortable2');});
         $("#new_card").offset({top: $(window).height()/2-100, left: $(window).width()/2-100});//top(400).left(400);
         $("#new_card_close").live("click", function(){
           $(this).parent().hide();
@@ -205,6 +204,11 @@
           id = $(this).closest(".ui-state-default").attr("id");
           deleteCard(id, "delete");
           });
+</sec:ifAllGranted>          
+        loadTasksForIteration($("#sortable1"), 0);
+        loadTasksForIteration($("#sortable2"), 0);
+        $("#prev_it").click(function(){prevIteration('#sortable2');});
+        $("#next_it").click(function(){nextIteration('#sortable2');});
           
       });
     </g:javascript>
@@ -212,6 +216,13 @@
     <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
+    <sec:ifLoggedIn>
+      Logged in as <sec:loggedInUserInfo field="username"/> <i>(<g:link controller='logout'>logout</g:link>)</i><br/>
+    </sec:ifLoggedIn>
+    <sec:ifNotLoggedIn>
+      <g:link controller='login' action='auth'>Login</g:link>
+    </sec:ifNotLoggedIn>
+    
     <div id="console" class="console">
       Logging...
     </div>
@@ -234,10 +245,10 @@
         </tr>
         <tr valign="top">
           <td height="500">
-            <ul id="sortable1" class="connectedSortable" data-iteration="0"/>
+            <ul id="sortable1" data-iteration="0"/>
           </td>
           <td>
-            <ul id="sortable2" class="connectedSortable" data-iteration="${project.currentIteration}"/>
+            <ul id="sortable2" data-iteration="${project.currentIteration}"/>
           </td>
         </tr>
       </table>
