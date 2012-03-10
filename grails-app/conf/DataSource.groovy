@@ -1,6 +1,6 @@
 dataSource {
     pooled = true
-    driverClassName = "org.hsqldb.jdbcDriver"
+    driverClassName = "org.h2.Driver"
     username = "sa"
     password = ""
 }
@@ -14,19 +14,20 @@ environments {
     development {
         dataSource {
             dbCreate = "create-drop" // one of 'create', 'create-drop','update'
-            url = "jdbc:hsqldb:mem:devDB"
+            url = "jdbc:h2:mem:devDB"
         }
     }
     test {
         dataSource {
             dbCreate = "update"
-            url = "jdbc:hsqldb:file:c:/tmp/testDb;shutdown=true"
+            url = "jdbc:h2:file:c:/tmp/tstDb"
         }
     }
     production {
         dataSource {
             dbCreate = "update"
-            jndiName = "java:comp/env/jdbc/xplanner" 
+            url = "jdbc:h2:file:c:/tmp/prodDb"
+            //jndiName = "jdbc/xplanner" 
         }        
     }
 }

@@ -10,12 +10,11 @@ class UserStory {
   Status status
   User assignee
   User creator
-  Integer iteration 
   Integer priority
   Boolean deleted = false
 
   static mapping = { sort priority:"asc"}
-  static belongsTo = [project: Project]
+  static belongsTo = [iteration: Iteration]
   static constraints = {
     title(blank: false)
     effort(range: 1..14)
@@ -29,5 +28,9 @@ class UserStory {
     dateCreated(display: true, nullable: true)
     dateStarted(display: true, nullable: true)
     deleted(display: false, nullable: true)
+  }
+  
+  String toString(){
+    title
   }
 }

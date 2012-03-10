@@ -54,7 +54,7 @@ grails.exceptionresolver.params.exclude = ['password']
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
-        grails.serverURL = "http://www.changeme.com"
+        grails.serverURL = "http://d34930252.ejgallo.com"
     }
     development {
         grails.serverURL = "http://localhost:8080/${appName}"
@@ -79,10 +79,12 @@ log4j = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
-
-    error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-           'org.codehaus.groovy.grails.web.pages', //  GSP
-           'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+    appenders {
+        rollingFile name: "mylog", file: 'c:/tmp/mylog.log',   layout: pattern(conversionPattern: '%d{ISO8601} [%t] %p %c' )
+         }
+    error  'org.codehaus.groovy.grails.web.servlet'  //  controllers
+    warn       'org.codehaus.groovy.grails.web.pages' //  GSP
+    error       'org.codehaus.groovy.grails.web.sitemesh', //  layouts
            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
            'org.codehaus.groovy.grails.web.mapping', // URL mapping
            'org.codehaus.groovy.grails.commons', // core / classloading
@@ -91,6 +93,7 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
+    info  'org.sss.xplanner'
 
     warn   'org.mortbay.log'
 }

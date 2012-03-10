@@ -13,7 +13,7 @@
         </div>
         <div id="grailsLogo"><a href="/"><img src="${resource(dir:'images',file:'xplanner_logo.png')}" alt="XPlanner" border="0" /></a></div>
         <g:layoutBody />
-        <div>
+        <div class="footer">
         <hr/>
         <small><i>${org.codehaus.groovy.grails.commons.ApplicationHolder.application.metadata['app.name']} version ${org.codehaus.groovy.grails.commons.ApplicationHolder.application.metadata['app.version']} running on Grails v${org.codehaus.groovy.grails.commons.ApplicationHolder.application.metadata['app.grails.version']}</i></small>
         </div>

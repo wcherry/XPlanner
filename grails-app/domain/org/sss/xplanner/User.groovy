@@ -8,6 +8,11 @@ class User {
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
+  
+  //UserType type
+
+  static hasMany = [projects: Project]
+  static belongsTo = Project
 
 	static constraints = {
 		username blank: false, unique: true
@@ -21,4 +26,8 @@ class User {
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this).collect { it.role } as Set
 	}
+  
+  String toString(){
+    username
+  }
 }

@@ -7,4 +7,9 @@ class ProjectController {
     def p = Project.get(params.id)
     [project: p]  
   }
+  
+  def status = {
+    def p = Project.get(params.id)
+    [project: p]
+  }
 }

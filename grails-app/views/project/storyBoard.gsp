@@ -4,17 +4,62 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="layout" content="main" />
   
+    <title>Project ${project}</title>
+  </head>
+  <body>
+    <sec:ifLoggedIn>
+      Logged in as <sec:loggedInUserInfo field="username"/> <i>(<g:link controller='logout'>logout</g:link>)</i><br/>
+    </sec:ifLoggedIn>
+    <sec:ifNotLoggedIn>
+      <g:link controller='login' action='auth'>Login</g:link>
+    </sec:ifNotLoggedIn>
+    
+    <div id="console" class="console">
+      Logging...
+    </div>
+    <div class="body">
+    <div class="button_bar">
+<!--      <input type="button" id="show_effort" onClick="sumEfforts($('#sortable2'));" value="Effort"/>-->
+      <input type="image" id="new" onClick="displayNewCard();" src="${resource(dir:'images',file:'new.png')}"/>
+      <input type="image" id="update" onClick="updateTaskPositions();" src="${resource(dir:'images',file:'refresh.png')}"/>  
+      </div>
+      <div id="message"></div>
+      <g:if test="${flash.message}">
+        <div class="message">${flash.message}</div>
+      </g:if>
+
+      <table valign="top" width="1020">
+      <tr>
+          <td class="list-header" width="500">Unassigned</td>
+          <td class="list-header" width="500"><span id="prev_it" class="clickable">&lt;&lt;&nbsp;</span>
+            Iteration <span id="iter_number">1</span> <span id="current_id">(Current)</span><span id="effort"> </span>  <span id="next_it" class="clickable">&gt;&gt;&nbsp;</span></td>
+        </tr>
+        <tr valign="top">
+          <td height="500">
+            <ul id="sortable1" data-iteration="0"/>
+          </td>
+          <td>
+            <ul id="sortable2" data-iteration="${project.currentIteration()}"/>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id="new_card_container">
+    <g:render template="../userStory/editableStoryCard"/>
+    </div>
     <g:javascript library="jquery" />
     <g:javascript library="jquery/jquery-ui-1.8.10.custom.min" />
-    <g:javascript>
+
+  <g:javascript>
       function showSpinner(visible){
-        $('#spinner').show(visible); 
+        if(visible) $('#spinner').show(); else $('#spinner').hide();
       }
     
       function log(msg){
         $('#console').html($('#console').html()+"</br>"+msg).scrollTop(9999999);
       }
-      
+
+    log("Project max iterations: ${project.maxIteration}");
       function updateCallback2(e, obj){
         showSpinner(false);
         log("Call back "+e.status);
@@ -24,7 +69,7 @@
         hideNewCard();
         loadTasksForIteration($("#sortable1"), 0);
       }
-      
+
       function loadTasksForIteration(el, direction){
         showSpinner(true);
         str = Number(el.attr("data-iteration"));
@@ -46,39 +91,40 @@
         el.attr("data-iteration", iter);
         
         //
-        //TODO: Currently the table headers and the sortable list are not tied together. If we add addtional list then this code will break.
+        //TODO: Currently the table headers and the sortable list are not tied together. If we add additional list then this code will break.
         //
         if(el.attr("id")=="sortable2"){
           $('#iter_number').text(""+iter);    
-          if(iter == ${project.currentIteration}){
+          if(iter == ${project.currentIteration()}){
             $('#current_id').text("(Current)");
             } else {
             $('#current_id').text("");
           }
         }
       }
-      
+
       function updateTaskPositions(event, ui){
         var list = $(ui.item).parent();
         log("Updating list..."+list.attr('id'));
         showSpinner(true);
         
         params = new Object();
+        params.timeout = 10000;
         //
         //TODO: If we add addtional list then this code will break. Should grab ALL sortable list.
         //
+        params.project = ${project.id}
         it = list.attr("data-iteration");
         list.children().each(function(i,el){ params['storyId_'+it+"_"+i] = el.id; });
         
-        $.post('/XPlanner/userStory/ajaxUpdatePriority',params, function(event, status){
-          showSpinner(false);
-          log("Call back "+status);
-          if(status == 'error'){
-            alert(event);
-          }
-          if(list.attr('id')!='sortable1') sumEfforts(list);
-        });*/
-        log("Updating list...done");//+ $(ui).attr('id'));
+        $.post('/XPlanner/userStory/ajaxUpdatePriority',params)
+          .success(function(data){
+            alert("Success:"+data);
+            if(list.attr('id')!='sortable1') sumEfforts(list);
+          })
+          .error(function(data){alert(data.statusText+":"+data.responseText);})
+          .complete(function(data){showSpinner(false);})
+        log("Done updating list..."+list.attr('id'));
       }
       
       function clearTasks(id){
@@ -106,8 +152,8 @@
       
       function displayEditCard(id){
         log("Calling displayEditCard with argument "+id);
-        params = {task: id};
-        $("#new_card_container").load('/XPlanner/task/ajaxLoadTask',params, function(event, status) {
+        params = {story: id};
+        $("#new_card_container").load('/XPlanner/userStory/ajaxLoad',params, function(event, status) {
           showSpinner(false);
           log("Call back "+status);
           if(status == 'error'){
@@ -179,18 +225,27 @@
       }
           
       $(function() {
-<sec:ifAllGranted roles="ROLE_USER">        
+    log("Ready to run bootstrap...");
+<sec:ifAllGranted roles="ROLE_USER">
+        $.ajaxSetup({timeout: 1000});
         $('#postId').click(function(){showForm(true);});
         
         $( "#sortable1, #sortable2" ).addClass("connectedSortable");
-      	$( "#sortable1, #sortable2" ).sortable({
+      	$( "#sortable2" ).sortable({
           connectWith: ".connectedSortable",
           update: function(event, ui){updateTaskPositions(event, ui);}
           }).disableSelection().droppable();
 
+      	$( "#sortable1" ).sortable({
+          connectWith: ".connectedSortable"
+          
+          }).disableSelection().droppable();
+
+
+
         $.event.add(window, "load", resizeFrame);
         $.event.add(window, "resize", resizeFrame);
-          
+//    log("Project max iterations: ${project.maxIteration}");
         $(".notecard").live("dblclick", function(){
             id = $(this).parent().attr("id");
             log("Double Click: "+id);
@@ -212,49 +267,5 @@
           
       });
     </g:javascript>
-    <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
-  </head>
-  <body>
-    <sec:ifLoggedIn>
-      Logged in as <sec:loggedInUserInfo field="username"/> <i>(<g:link controller='logout'>logout</g:link>)</i><br/>
-    </sec:ifLoggedIn>
-    <sec:ifNotLoggedIn>
-      <g:link controller='login' action='auth'>Login</g:link>
-    </sec:ifNotLoggedIn>
-    
-    <div id="console" class="console">
-      Logging...
-    </div>
-    <div class="body">
-    <div class="button_bar">
-<!--      <input type="button" id="show_effort" onClick="sumEfforts($('#sortable2'));" value="Effort"/>-->
-      <input type="image" id="new" onClick="displayNewCard();" src="${resource(dir:'images',file:'new.png')}"/>
-      <input type="image" id="update" onClick="updateTaskPositions();" src="${resource(dir:'images',file:'refresh.png')}"/>  
-      </div>
-      <div id="message"></div>
-      <g:if test="${flash.message}">
-        <div class="message">${flash.message}</div>
-      </g:if>
-
-      <table valign="top" width="1020">
-      <tr>
-          <td class="list-header" width="500">Unassigned</td>
-          <td class="list-header" width="500"><span id="prev_it" class="clickable">&lt;&lt;&nbsp;</span>
-            Iteration <span id="iter_number">1</span> <span id="current_id">(Current)</span><span id="effort"> </span>  <span id="next_it" class="clickable">&gt;&gt;&nbsp;</span></td>
-        </tr>
-        <tr valign="top">
-          <td height="500">
-            <ul id="sortable1" data-iteration="0"/>
-          </td>
-          <td>
-            <ul id="sortable2" data-iteration="${project.currentIteration}"/>
-          </td>
-        </tr>
-      </table>
-    </div>
-    <div id="new_card_container">
-    <g:render template="../userStory/editableStoryCard"/>
-    </div>
   </body>
 </html>
